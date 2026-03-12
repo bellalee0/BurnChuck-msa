@@ -1,3 +1,9 @@
+// common/build.gradle
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+}
+
 // common은 bootJar 불필요 (라이브러리 모듈)
 bootJar { enabled = false }
 jar     { enabled = true  }
@@ -24,6 +30,10 @@ dependencies {
 
     // WebSocket (StompHandler가 common에 있으므로)
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // AWS S3
+    implementation(platform("software.amazon.awssdk:bom:2.35.0"))
+    implementation("software.amazon.awssdk:s3")
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 }

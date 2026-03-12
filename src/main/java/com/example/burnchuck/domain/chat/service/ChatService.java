@@ -1,7 +1,6 @@
 package com.example.burnchuck.domain.chat.service;
 
 import com.example.burnchuck.common.dto.AuthUser;
-import com.example.burnchuck.common.entity.*;
 import com.example.burnchuck.domain.chat.dto.dto.ChatReadEvent;
 import com.example.burnchuck.domain.chat.dto.request.ChatMessageRequest;
 import com.example.burnchuck.domain.chat.dto.response.ChatMessageResponse;

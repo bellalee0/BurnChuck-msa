@@ -1,7 +1,5 @@
 package com.example.burnchuck.domain.meeting.dto.request;
 
-import static com.example.burnchuck.common.constants.ValidationMessage.*;
-
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
