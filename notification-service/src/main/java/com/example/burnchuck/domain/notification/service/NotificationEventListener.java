@@ -1,8 +1,8 @@
 package com.example.burnchuck.domain.notification.service;
 
 import com.example.burnchuck.common.enums.MeetingTaskType;
-import com.example.burnchuck.domain.meeting.event.MeetingAttendeesChangeEvent;
-import com.example.burnchuck.domain.meeting.event.MeetingEvent;
+import com.example.burnchuck.common.event.meeting.MeetingAttendeesChangeEvent;
+import com.example.burnchuck.common.event.meeting.MeetingEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
