@@ -1,5 +1,8 @@
 package com.example.burnchuck.domain.user.controller;
 
+import static com.example.burnchuck.common.enums.SuccessMessage.USER_GET_FAVORITE_CATEGORY_SUCCESS;
+import static com.example.burnchuck.common.enums.SuccessMessage.USER_POST_FAVORITE_CATEGORY_SUCCESS;
+
 import com.example.burnchuck.common.dto.AuthUser;
 import com.example.burnchuck.common.dto.CommonResponse;
 import com.example.burnchuck.domain.user.dto.request.UserCategoryCreateRequest;

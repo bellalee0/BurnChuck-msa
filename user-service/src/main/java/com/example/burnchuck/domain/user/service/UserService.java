@@ -6,12 +6,7 @@ import com.example.burnchuck.common.entity.Address;
 import com.example.burnchuck.common.entity.User;
 import com.example.burnchuck.common.enums.ErrorCode;
 import com.example.burnchuck.common.exception.CustomException;
-import com.example.burnchuck.common.utils.S3UrlGenerator;
-import com.example.burnchuck.domain.auth.repository.UserRefreshRepository;
 import com.example.burnchuck.domain.follow.repository.FollowRepository;
-import com.example.burnchuck.domain.meetingLike.repository.MeetingLikeRepository;
-import com.example.burnchuck.domain.notification.service.EmitterService;
-import com.example.burnchuck.domain.review.repository.ReviewRepository;
 import com.example.burnchuck.domain.user.dto.request.UserUpdatePasswordRequest;
 import com.example.burnchuck.domain.user.dto.request.UserUpdateProfileRequest;
 import com.example.burnchuck.domain.user.dto.response.UserGetAddressResponse;
@@ -20,7 +15,9 @@ import com.example.burnchuck.domain.user.dto.response.UserGetProfileResponse;
 import com.example.burnchuck.domain.user.dto.response.UserUpdateProfileResponse;
 import com.example.burnchuck.domain.user.event.UserEventPublisher;
 import com.example.burnchuck.domain.user.repository.AddressRepository;
+import com.example.burnchuck.domain.user.repository.ReviewRepository;
 import com.example.burnchuck.domain.user.repository.UserRepository;
+import com.example.burnchuck.domain.user.util.S3UrlGenerator;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,12 +32,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final FollowRepository followRepository;
-    private final MeetingLikeRepository meetingLikeRepository;
     private final ReviewRepository reviewRepository;
-    private final UserRefreshRepository userRefreshRepository;
 
     private final UserEventPublisher userEventPublisher;
-    private final EmitterService emitterService;
 
     private final PasswordEncoder passwordEncoder;
     private final S3UrlGenerator s3UrlGenerator;
@@ -145,20 +139,15 @@ public class UserService {
 
     /**
      * 회원 탈퇴
+     * TODO: refresh 토큰, meetingLike, emitter 처리 추가 필요
      */
     @Transactional
     public void deleteUser(AuthUser authUser) {
 
         User user = userRepository.findActivateUserById(authUser.getId());
 
-        userRefreshRepository.deleteByUserId(user.getId());
-
-        meetingLikeRepository.deleteByUserId(user.getId());
-
         followRepository.deleteByFollowerId(user.getId());
         followRepository.deleteByFolloweeId(user.getId());
-
-        emitterService.disconnectAllEmittersByUserId(user.getId());
 
         user.delete();
         userRepository.saveAndFlush(user);
@@ -178,6 +167,7 @@ public class UserService {
         Long followers = followRepository.countByFollowee(user);
 
         Double avgRates = reviewRepository.findAvgRatesByReviewee(user);
+        avgRates = avgRates == null ? 0 : avgRates;
 
         return new UserGetProfileResponse(
             user.getProfileImgUrl(),

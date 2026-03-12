@@ -6,16 +6,15 @@ import com.example.burnchuck.common.entity.User;
 import com.example.burnchuck.common.entity.UserCategory;
 import com.example.burnchuck.common.enums.ErrorCode;
 import com.example.burnchuck.common.exception.CustomException;
-import com.example.burnchuck.domain.category.repository.CategoryRepository;
 import com.example.burnchuck.domain.user.dto.request.UserCategoryCreateRequest;
 import com.example.burnchuck.domain.user.dto.response.UserCategoryGetResponse;
+import com.example.burnchuck.domain.user.repository.CategoryRepository;
 import com.example.burnchuck.domain.user.repository.UserCategoryRepository;
 import com.example.burnchuck.domain.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

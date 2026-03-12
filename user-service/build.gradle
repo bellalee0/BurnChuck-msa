@@ -9,11 +9,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // S3 (프로필 이미지 업로드)
+    // AWS S3
     implementation 'software.amazon.awssdk:s3'
-
-    // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 }
