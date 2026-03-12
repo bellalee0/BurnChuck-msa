@@ -1,4 +1,4 @@
-package com.example.burnchuck.common.entity;
+package com.example.burnchuck.domain.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;

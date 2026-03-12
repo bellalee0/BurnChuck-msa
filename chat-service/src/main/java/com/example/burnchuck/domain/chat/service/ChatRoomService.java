@@ -4,7 +4,6 @@ import static com.example.burnchuck.common.enums.ErrorCode.CANNOT_CHAT_WITH_SELF
 import static com.example.burnchuck.common.enums.ErrorCode.CANNOT_LEAVE_NOT_COMPLETED_MEETING;
 
 import com.example.burnchuck.common.dto.AuthUser;
-import com.example.burnchuck.common.entity.ChatMessage;
 import com.example.burnchuck.common.entity.ChatRoom;
 import com.example.burnchuck.common.entity.ChatRoomUser;
 import com.example.burnchuck.common.entity.Meeting;
@@ -22,8 +21,9 @@ import com.example.burnchuck.domain.chat.dto.response.ChatRoomDetailResponse;
 import com.example.burnchuck.domain.chat.repository.ChatMessageRepository;
 import com.example.burnchuck.domain.chat.repository.ChatRoomRepository;
 import com.example.burnchuck.domain.chat.repository.ChatRoomUserRepository;
-import com.example.burnchuck.domain.meeting.repository.MeetingRepository;
-import com.example.burnchuck.domain.user.repository.UserRepository;
+import com.example.burnchuck.domain.chat.repository.MeetingRepository;
+import com.example.burnchuck.domain.chat.repository.UserRepository;
+import com.example.burnchuck.domain.entity.ChatMessage;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

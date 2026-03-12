@@ -1,4 +1,4 @@
-package com.example.burnchuck.common.config;
+package com.example.burnchuck.domain.config;
 
 import com.example.burnchuck.common.handler.AuthHandshakeInterceptor;
 import com.example.burnchuck.common.handler.StompHandler;

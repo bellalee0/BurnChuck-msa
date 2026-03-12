@@ -1,11 +1,10 @@
 package com.example.burnchuck.domain.chat.repository;
 
-import com.example.burnchuck.common.entity.ChatMessage;
+import com.example.burnchuck.domain.entity.ChatMessage;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
-import java.util.Optional;
 
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
 

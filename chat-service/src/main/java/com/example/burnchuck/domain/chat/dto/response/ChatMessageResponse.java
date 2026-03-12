@@ -1,10 +1,9 @@
 package com.example.burnchuck.domain.chat.dto.response;
 
-import com.example.burnchuck.common.entity.ChatMessage;
+import com.example.burnchuck.domain.entity.ChatMessage;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor

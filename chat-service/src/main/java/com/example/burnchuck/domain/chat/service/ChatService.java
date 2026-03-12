@@ -1,19 +1,20 @@
 package com.example.burnchuck.domain.chat.service;
 
 import com.example.burnchuck.common.dto.AuthUser;
+import com.example.burnchuck.common.entity.User;
 import com.example.burnchuck.domain.chat.dto.dto.ChatReadEvent;
 import com.example.burnchuck.domain.chat.dto.request.ChatMessageRequest;
 import com.example.burnchuck.domain.chat.dto.response.ChatMessageResponse;
 import com.example.burnchuck.domain.chat.dto.response.ChatRoomUpdateEvent;
 import com.example.burnchuck.domain.chat.repository.ChatMessageRepository;
 import com.example.burnchuck.domain.chat.repository.ChatRoomUserRepository;
-import com.example.burnchuck.domain.user.repository.UserRepository;
+import com.example.burnchuck.domain.chat.repository.UserRepository;
+import com.example.burnchuck.domain.entity.ChatMessage;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

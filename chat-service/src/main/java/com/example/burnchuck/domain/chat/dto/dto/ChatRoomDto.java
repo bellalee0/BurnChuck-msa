@@ -1,12 +1,11 @@
 package com.example.burnchuck.domain.chat.dto.dto;
 
-import com.example.burnchuck.common.entity.ChatMessage;
 import com.example.burnchuck.common.entity.ChatRoom;
 import com.example.burnchuck.common.enums.RoomType;
+import com.example.burnchuck.domain.entity.ChatMessage;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
