@@ -1,4 +1,4 @@
-package com.example.burnchuck.domain.auth.config;
+package com.example.burnchuck.domain.config;
 
 import com.example.burnchuck.common.config.BaseSecurityConfig;
 import com.example.burnchuck.common.filter.JwtFilter;

@@ -1,4 +1,4 @@
-package com.example.burnchuck.domain.auth.config;
+package com.example.burnchuck.domain.config;
 
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.OpenAPI;
