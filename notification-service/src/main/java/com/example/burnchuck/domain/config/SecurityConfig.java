@@ -27,6 +27,7 @@ public class SecurityConfig extends BaseSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return applyCommonSecurity(http)
             .authorizeHttpRequests(auth -> applyCommonPermit(auth)
+                .requestMatchers("/api/notifications/subscribe").permitAll()
                 .anyRequest().authenticated()
             )
             .build();
