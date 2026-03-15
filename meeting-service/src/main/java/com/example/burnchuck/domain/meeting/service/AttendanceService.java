@@ -99,7 +99,7 @@ public class AttendanceService {
             meetingEventPublisher.publishMeetingStatusChangeEvent(meeting, MeetingStatus.OPEN);
         }
 
-        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingAttendeesMessage(new MeetingAttendeesEventMessage(meeting.getId(), user.getId(), NotificationType.MEETING_MEMBER_JOIN.name())));
+        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingAttendeesMessage(new MeetingAttendeesEventMessage(meeting.getId(), user.getId(), NotificationType.MEETING_MEMBER_LEFT.name())));
         TransactionUtils.afterCommit(() -> elasticsearchService.updateMeetingCurrentAttendees(meeting));
     }
 
@@ -125,7 +125,7 @@ public class AttendanceService {
                 meetingEventPublisher.publishMeetingStatusChangeEvent(meeting, MeetingStatus.OPEN);
             }
 
-            TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingAttendeesMessage(new MeetingAttendeesEventMessage(meeting.getId(), user.getId(), NotificationType.MEETING_MEMBER_JOIN.name())));
+            TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingAttendeesMessage(new MeetingAttendeesEventMessage(meeting.getId(), user.getId(), NotificationType.MEETING_MEMBER_LEFT.name())));
             TransactionUtils.afterCommit(() -> elasticsearchService.updateMeetingCurrentAttendees(meeting));
         }
     }
