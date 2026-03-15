@@ -3,6 +3,7 @@ package com.example.burnchuck.domain.kafka;
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_ATTENDEES;
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_REGISTER;
 
+import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
 import com.example.burnchuck.domain.chat.service.ChatKafkaEventHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,7 +40,7 @@ public class KafkaMessageListener {
     )
     public void consumeMeetingAttendeesMessage(String message) {
         try {
-            MeetingRegisterEventMessage event = objectMapper.readValue(message, MeetingRegisterEventMessage.class);
+            MeetingAttendeesEventMessage event = objectMapper.readValue(message, MeetingAttendeesEventMessage.class);
             chatKafkaEventHandler.handleMeetingAttendeesEvent(event);
         } catch (JsonProcessingException e) {
             log.error("[Kafka] 역직렬화 실패 - topic: {}, message: {}", TOPIC_MEETING_ATTENDEES, message, e);

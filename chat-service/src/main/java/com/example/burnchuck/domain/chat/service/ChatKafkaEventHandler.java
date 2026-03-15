@@ -2,6 +2,7 @@ package com.example.burnchuck.domain.chat.service;
 
 import com.example.burnchuck.common.enums.MeetingTaskType;
 import com.example.burnchuck.common.enums.NotificationType;
+import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,11 @@ public class ChatKafkaEventHandler {
         }
     }
 
-    public void handleMeetingAttendeesEvent(MeetingRegisterEventMessage event) {
+    public void handleMeetingAttendeesEvent(MeetingAttendeesEventMessage event) {
 
-        NotificationType type = NotificationType.valueOf(event.getTaskType());
+        NotificationType type = NotificationType.valueOf(event.getNotificationType());
         Long meetingId = event.getMeetingId();
-        Long userId = event.getHostUserId();
+        Long userId = event.getUserId();
 
         switch (type) {
             case MEETING_MEMBER_JOIN -> chatRoomService.joinGroupChatRoom(meetingId, userId);
