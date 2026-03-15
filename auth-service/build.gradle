@@ -8,4 +8,8 @@ dependencies {
 
     // OAuth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }

@@ -12,4 +12,8 @@ dependencies {
 
     // AWS S3
     implementation 'software.amazon.awssdk:s3'
+
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
