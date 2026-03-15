@@ -34,8 +34,8 @@ public class ElasticsearchService {
     }
 
     @Async("customTaskExecutor")
-    public void deleteMeeting(Meeting meeting) {
-        meetingDocumentRepository.deleteById(meeting.getId());
+    public void deleteMeeting(Long meetingId) {
+        meetingDocumentRepository.deleteById(meetingId);
     }
 
     public void updateMeetingStatus(Long meetingId, MeetingStatus status) {

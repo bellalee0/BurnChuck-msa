@@ -1,7 +1,8 @@
-package com.example.burnchuck.common.event.meeting;
+package com.example.burnchuck.domain.meeting.event;
 
 import com.example.burnchuck.common.entity.Meeting;
 import com.example.burnchuck.common.enums.MeetingStatus;
+import com.example.burnchuck.common.event.meeting.MeetingStatusChangeEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

@@ -8,8 +8,10 @@ import com.example.burnchuck.batch.repository.MeetingRepository;
 import com.example.burnchuck.batch.repository.SchedulingRepository;
 import com.example.burnchuck.common.entity.Meeting;
 import com.example.burnchuck.common.enums.MeetingStatus;
-import com.example.burnchuck.common.event.meeting.MeetingEventPublisher;
+import com.example.burnchuck.common.event.kafka.MeetingStatusEventMessage;
 import com.example.burnchuck.common.event.notification.NotificationEventPublisher;
+import com.example.burnchuck.common.utils.TransactionUtils;
+import com.example.burnchuck.kafka.KafkaMessageProducer;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -29,7 +31,7 @@ public class MeetingSchedulingService {
     private final MeetingRepository meetingRepository;
     private final SchedulingRepository schedulingRepository;
     private final NotificationEventPublisher notificationEventPublisher;
-    private final MeetingEventPublisher meetingEventPublisher;
+    private final KafkaMessageProducer kafkaMessageProducer;
 
     private <T> void scheduleTask(
         T target,
@@ -60,7 +62,7 @@ public class MeetingSchedulingService {
             e -> {
                 Meeting targetMeeting = meetingRepository.findActivateMeetingById(meetingId);
                 targetMeeting.updateStatus(MeetingStatus.COMPLETED);
-                meetingEventPublisher.publishMeetingStatusChangeEvent(meeting, MeetingStatus.COMPLETED);
+                TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingStatusMessage(new MeetingStatusEventMessage(meeting.getId(), MeetingStatus.COMPLETED.name())));
             },
             meeting.getMeetingDateTime().minusMinutes(10)
         );

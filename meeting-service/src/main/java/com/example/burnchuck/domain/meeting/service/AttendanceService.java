@@ -9,7 +9,7 @@ import com.example.burnchuck.common.enums.MeetingRole;
 import com.example.burnchuck.common.enums.MeetingStatus;
 import com.example.burnchuck.common.enums.NotificationType;
 import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
-import com.example.burnchuck.common.event.meeting.MeetingEventPublisher;
+import com.example.burnchuck.domain.meeting.event.MeetingEventPublisher;
 import com.example.burnchuck.common.exception.CustomException;
 import com.example.burnchuck.common.utils.TransactionUtils;
 import com.example.burnchuck.domain.kafka.KafkaMessageProducer;

@@ -9,7 +9,6 @@ import com.example.burnchuck.common.entity.Category;
 import com.example.burnchuck.common.entity.Meeting;
 import com.example.burnchuck.common.entity.User;
 import com.example.burnchuck.common.entity.UserMeeting;
-import com.example.burnchuck.common.enums.ErrorCode;
 import com.example.burnchuck.common.enums.MeetingRole;
 import com.example.burnchuck.common.enums.MeetingTaskType;
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
@@ -162,9 +161,9 @@ public class MeetingService {
     @Transactional
     public MeetingUpdateResponse updateMeeting(AuthUser authUser, Long meetingId, MeetingUpdateRequest request) {
 
-        if (!s3UrlGenerator.isFileExists(request.getImgUrl().replaceAll("^https?://[^/]+/", ""))) {
-            throw new CustomException(ErrorCode.MEETING_IMG_NOT_FOUND);
-        }
+//        if (!s3UrlGenerator.isFileExists(request.getImgUrl().replaceAll("^https?://[^/]+/", ""))) {
+//            throw new CustomException(ErrorCode.MEETING_IMG_NOT_FOUND);
+//        }
 
         User user = userRepository.findActivateUserById(authUser.getId());
 
@@ -192,6 +191,7 @@ public class MeetingService {
             category
         );
 
+        TransactionUtils.afterCommit(() -> elasticsearchService.saveMeeting(meeting));
         TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.UPDATE.name(), user.getId(), meeting.getMeetingDateTime())));
 
         return MeetingUpdateResponse.from(meeting);
@@ -214,6 +214,7 @@ public class MeetingService {
 
         meeting.delete();
 
+        TransactionUtils.afterCommit(() -> elasticsearchService.deleteMeeting(meeting.getId()));
         TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.DELETE.name(), user.getId(), meeting.getMeetingDateTime())));
     }
 

@@ -1,8 +1,10 @@
 package com.example.burnchuck.kafka;
 
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_COMMENT_NOTIFICATION;
+import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_STATUS;
 
 import com.example.burnchuck.common.event.kafka.CommentNotificationEventMessage;
+import com.example.burnchuck.common.event.kafka.MeetingStatusEventMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,6 +22,15 @@ public class KafkaMessageProducer {
             .whenComplete((result, ex) -> {
                 if (ex != null) {
                     log.error("[Kafka] 전송 실패 - topic: {}, message: {}", TOPIC_COMMENT_NOTIFICATION, message, ex);
+                }
+            });
+    }
+
+    public void sendMeetingStatusMessage(MeetingStatusEventMessage message) {
+        kafkaTemplate.send(TOPIC_MEETING_STATUS, message)
+            .whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.error("[Kafka] 전송 실패 - topic: {}, message: {}", TOPIC_MEETING_STATUS, message, ex);
                 }
             });
     }
