@@ -4,9 +4,10 @@ import com.example.burnchuck.common.dto.AuthUser;
 import com.example.burnchuck.common.entity.Address;
 import com.example.burnchuck.common.entity.User;
 import com.example.burnchuck.common.enums.ErrorCode;
-import com.example.burnchuck.common.event.user.UserEventPublisher;
+import com.example.burnchuck.common.event.kafka.UserDeleteEventMessage;
 import com.example.burnchuck.common.exception.CustomException;
 import com.example.burnchuck.domain.follow.repository.FollowRepository;
+import com.example.burnchuck.domain.kafka.KafkaMessageProducer;
 import com.example.burnchuck.domain.user.dto.S3UrlResponse;
 import com.example.burnchuck.domain.user.dto.request.UserUpdatePasswordRequest;
 import com.example.burnchuck.domain.user.dto.request.UserUpdateProfileRequest;
@@ -34,7 +35,7 @@ public class UserService {
     private final FollowRepository followRepository;
     private final ReviewRepository reviewRepository;
 
-    private final UserEventPublisher userEventPublisher;
+    private final KafkaMessageProducer kafkaMessageProducer;
 
     private final PasswordEncoder passwordEncoder;
     private final S3UrlGenerator s3UrlGenerator;
@@ -151,7 +152,7 @@ public class UserService {
         user.delete();
         userRepository.saveAndFlush(user);
 
-        userEventPublisher.publishUserDeletedEvent(user.getId());
+        kafkaMessageProducer.sendUserDeleteMessage(new UserDeleteEventMessage(user.getId()));
     }
 
     /**

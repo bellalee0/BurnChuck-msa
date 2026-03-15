@@ -1,8 +1,6 @@
 package com.example.burnchuck.domain.meetingLike.service;
 
 import com.example.burnchuck.common.event.meetingLike.MeetingLikeEvent;
-import com.example.burnchuck.common.event.user.UserDeleteEvent;
-import com.example.burnchuck.domain.meetingLike.repository.MeetingLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -14,7 +12,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class MeetingLikeEventListener {
 
     private final MeetingLikeCacheService meetingLikeCacheService;
-    private final MeetingLikeRepository meetingLikeRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @EventListener
@@ -26,12 +23,5 @@ public class MeetingLikeEventListener {
             case INCREASE -> meetingLikeCacheService.increaseMeetingLike(meetingId);
             case DECREASE -> meetingLikeCacheService.decreaseMeetingLike(meetingId);
         }
-    }
-
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @EventListener
-    public void deletedUser(UserDeleteEvent event) {
-
-        meetingLikeRepository.deleteByUserId(event.getUserId());
     }
 }

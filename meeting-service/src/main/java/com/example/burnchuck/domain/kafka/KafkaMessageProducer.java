@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j(topic = "Kafka-producer")
 @Service
 @RequiredArgsConstructor
-public class MessageProducer {
+public class KafkaMessageProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
