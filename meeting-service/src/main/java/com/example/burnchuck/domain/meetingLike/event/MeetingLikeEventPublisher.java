@@ -1,4 +1,4 @@
-package com.example.burnchuck.common.event.meetingLike;
+package com.example.burnchuck.domain.meetingLike.event;
 
 import com.example.burnchuck.common.event.meetingLike.MeetingLikeEvent.MeetingLikeEventType;
 import lombok.RequiredArgsConstructor;
