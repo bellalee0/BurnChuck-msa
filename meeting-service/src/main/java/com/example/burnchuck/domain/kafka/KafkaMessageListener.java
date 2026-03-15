@@ -27,7 +27,7 @@ public class KafkaMessageListener {
         topics = TOPIC_USER_DELETE,
         containerFactory = "stringKafkaListenerContainerFactory"
     )
-    public void consumeMeetingRegisterMessage(String message) {
+    public void consumeUserDeleteMessage(String message) {
         try {
             UserDeleteEventMessage event = objectMapper.readValue(message, UserDeleteEventMessage.class);
             meetingEventHandler.handleUserDeleteEvent(event);
