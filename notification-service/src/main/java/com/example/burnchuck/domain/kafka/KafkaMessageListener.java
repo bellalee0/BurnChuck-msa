@@ -1,8 +1,10 @@
 package com.example.burnchuck.domain.kafka;
 
+import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_ATTENDEES;
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_REGISTER;
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_USER_DELETE;
 
+import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
 import com.example.burnchuck.common.event.kafka.UserDeleteEventMessage;
 import com.example.burnchuck.domain.notification.service.NotificationKafkaEventHandler;
@@ -44,6 +46,19 @@ public class KafkaMessageListener {
             notificationKafkaEventHandler.handleMeetingRegisterEvent(event);
         } catch (JsonProcessingException e) {
             log.error("[Kafka] 역직렬화 실패 - topic: {}, message: {}", TOPIC_MEETING_REGISTER, message, e);
+        }
+    }
+
+    @KafkaListener(
+        topics = TOPIC_MEETING_ATTENDEES,
+        containerFactory = "stringKafkaListenerContainerFactory"
+    )
+    public void consumeMeetingAttendeesMessage(String message) {
+        try {
+            MeetingAttendeesEventMessage event = objectMapper.readValue(message, MeetingAttendeesEventMessage.class);
+            notificationKafkaEventHandler.handleMeetingAttendeesEvent(event);
+        } catch (JsonProcessingException e) {
+            log.error("[Kafka] 역직렬화 실패 - topic: {}, message: {}", TOPIC_MEETING_ATTENDEES, message, e);
         }
     }
 }

@@ -144,7 +144,10 @@ public class NotificationService {
      * 모임의 유저가 탈퇴했을 때 -> 해당 모임의 주최자에게 알림 발송
      */
     @Transactional
-    public void notifyMeetingMember(NotificationType notificationType, Meeting meeting, User attendee) {
+    public void notifyMeetingMember(NotificationType notificationType, Long meetingId, Long attendeeId) {
+
+        Meeting meeting = meetingRepository.findActivateMeetingById(meetingId);
+        User attendee = userRepository.findActivateUserById(attendeeId);
 
         String description = notificationType.getDescription(meeting.getTitle(), attendee.getNickname());
 

@@ -8,10 +8,13 @@ import com.example.burnchuck.common.enums.ErrorCode;
 import com.example.burnchuck.common.enums.MeetingRole;
 import com.example.burnchuck.common.enums.MeetingStatus;
 import com.example.burnchuck.common.enums.NotificationType;
+import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
+import com.example.burnchuck.common.event.meeting.MeetingEventPublisher;
 import com.example.burnchuck.common.exception.CustomException;
+import com.example.burnchuck.common.utils.TransactionUtils;
+import com.example.burnchuck.domain.kafka.KafkaMessageProducer;
 import com.example.burnchuck.domain.meeting.dto.response.AttendanceGetMeetingListResponse;
 import com.example.burnchuck.domain.meeting.dto.response.MeetingSummaryWithStatusResponse;
-import com.example.burnchuck.common.event.meeting.MeetingEventPublisher;
 import com.example.burnchuck.domain.meeting.repository.MeetingRepository;
 import com.example.burnchuck.domain.meeting.repository.UserMeetingRepository;
 import com.example.burnchuck.domain.meeting.repository.UserRepository;
@@ -29,6 +32,8 @@ public class AttendanceService {
     private final MeetingRepository meetingRepository;
 
     private final MeetingEventPublisher meetingEventPublisher;
+    private final KafkaMessageProducer kafkaMessageProducer;
+    private final ElasticsearchService elasticsearchService;
 
     /**
      * 모임 참여 신청
@@ -63,7 +68,8 @@ public class AttendanceService {
             meetingEventPublisher.publishMeetingStatusChangeEvent(meeting, MeetingStatus.CLOSED);
         }
 
-        meetingEventPublisher.publishMeetingAttendeesChangeEvent(NotificationType.MEETING_MEMBER_JOIN, meeting, user);
+        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingAttendeesMessage(new MeetingAttendeesEventMessage(meeting.getId(), user.getId(), NotificationType.MEETING_MEMBER_JOIN.name())));
+        TransactionUtils.afterCommit(() -> elasticsearchService.updateMeetingCurrentAttendees(meeting));
     }
 
     /**
@@ -93,7 +99,8 @@ public class AttendanceService {
             meetingEventPublisher.publishMeetingStatusChangeEvent(meeting, MeetingStatus.OPEN);
         }
 
-        meetingEventPublisher.publishMeetingAttendeesChangeEvent(NotificationType.MEETING_MEMBER_LEFT, meeting, user);
+        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingAttendeesMessage(new MeetingAttendeesEventMessage(meeting.getId(), user.getId(), NotificationType.MEETING_MEMBER_JOIN.name())));
+        TransactionUtils.afterCommit(() -> elasticsearchService.updateMeetingCurrentAttendees(meeting));
     }
 
     /**
@@ -118,7 +125,8 @@ public class AttendanceService {
                 meetingEventPublisher.publishMeetingStatusChangeEvent(meeting, MeetingStatus.OPEN);
             }
 
-            meetingEventPublisher.publishMeetingAttendeesChangeEvent(NotificationType.MEETING_MEMBER_LEFT, meeting, user);
+            TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingAttendeesMessage(new MeetingAttendeesEventMessage(meeting.getId(), user.getId(), NotificationType.MEETING_MEMBER_JOIN.name())));
+            TransactionUtils.afterCommit(() -> elasticsearchService.updateMeetingCurrentAttendees(meeting));
         }
     }
 

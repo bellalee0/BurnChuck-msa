@@ -50,6 +50,7 @@ public class ElasticsearchService {
         elasticsearchOperations.update(updateQuery, IndexCoordinates.of("meetings"));
     }
 
+    @Async("customTaskExecutor")
     public void updateMeetingCurrentAttendees(Meeting meeting) {
 
         int currentAttendees = userMeetingRepository.countByMeeting(meeting);

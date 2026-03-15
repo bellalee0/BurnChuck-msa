@@ -107,7 +107,9 @@ public class ChatRoomService {
      * 그룹 채팅방 입장 (모임 참여 시 호출)
      */
     @Transactional
-    public void joinGroupChatRoom(Long meetingId, User user) {
+    public void joinGroupChatRoom(Long meetingId, Long userId) {
+
+        User user = userRepository.findActivateUserById(userId);
 
         ChatRoom chatRoom = chatRoomRepository.findChatRoomByMeetingId(meetingId);
 

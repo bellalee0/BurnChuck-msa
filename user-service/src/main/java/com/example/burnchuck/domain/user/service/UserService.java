@@ -6,6 +6,7 @@ import com.example.burnchuck.common.entity.User;
 import com.example.burnchuck.common.enums.ErrorCode;
 import com.example.burnchuck.common.event.kafka.UserDeleteEventMessage;
 import com.example.burnchuck.common.exception.CustomException;
+import com.example.burnchuck.common.utils.TransactionUtils;
 import com.example.burnchuck.domain.follow.repository.FollowRepository;
 import com.example.burnchuck.domain.kafka.KafkaMessageProducer;
 import com.example.burnchuck.domain.user.dto.S3UrlResponse;
@@ -152,7 +153,7 @@ public class UserService {
         user.delete();
         userRepository.saveAndFlush(user);
 
-        kafkaMessageProducer.sendUserDeleteMessage(new UserDeleteEventMessage(user.getId()));
+        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendUserDeleteMessage(new UserDeleteEventMessage(user.getId())));
     }
 
     /**

@@ -116,7 +116,7 @@ public class MeetingService {
         userMeetingRepository.save(userMeeting);
 
         TransactionUtils.afterCommit(() -> elasticsearchService.saveMeeting(meeting));
-        kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.CREATE.name(), user.getId(), meeting.getMeetingDateTime()));
+        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.CREATE.name(), user.getId(), meeting.getMeetingDateTime())));
 
         return MeetingCreateResponse.from(meeting);
     }
@@ -192,7 +192,7 @@ public class MeetingService {
             category
         );
 
-        kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.UPDATE.name(), user.getId(), meeting.getMeetingDateTime()));
+        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.UPDATE.name(), user.getId(), meeting.getMeetingDateTime())));
 
         return MeetingUpdateResponse.from(meeting);
     }
@@ -214,7 +214,7 @@ public class MeetingService {
 
         meeting.delete();
 
-        kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.DELETE.name(), user.getId(), meeting.getMeetingDateTime()));
+        TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.DELETE.name(), user.getId(), meeting.getMeetingDateTime())));
     }
 
     /**
@@ -228,7 +228,7 @@ public class MeetingService {
         for (Meeting meeting : meetingList) {
 
             meeting.delete();
-            kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.DELETE.name(), userId, meeting.getMeetingDateTime()));
+            TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.DELETE.name(), userId, meeting.getMeetingDateTime())));
         }
     }
 

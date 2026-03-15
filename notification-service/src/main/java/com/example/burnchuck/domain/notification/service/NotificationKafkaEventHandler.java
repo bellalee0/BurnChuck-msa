@@ -1,6 +1,8 @@
 package com.example.burnchuck.domain.notification.service;
 
 import com.example.burnchuck.common.enums.MeetingTaskType;
+import com.example.burnchuck.common.enums.NotificationType;
+import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
 import com.example.burnchuck.common.event.kafka.UserDeleteEventMessage;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,12 @@ public class NotificationKafkaEventHandler {
         if (type == MeetingTaskType.CREATE) {
             notificationService.notifyNewFollowerPost(event.getMeetingId());
         }
+    }
+
+    public void handleMeetingAttendeesEvent(MeetingAttendeesEventMessage event) {
+
+        NotificationType type = NotificationType.valueOf(event.getNotificationType());
+
+        notificationService.notifyMeetingMember(type, event.getMeetingId(), event.getUserId());
     }
 }

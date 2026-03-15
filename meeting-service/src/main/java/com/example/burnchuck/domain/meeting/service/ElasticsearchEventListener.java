@@ -2,7 +2,6 @@ package com.example.burnchuck.domain.meeting.service;
 
 import com.example.burnchuck.common.entity.Meeting;
 import com.example.burnchuck.common.enums.MeetingStatus;
-import com.example.burnchuck.common.event.meeting.MeetingAttendeesChangeEvent;
 import com.example.burnchuck.common.event.meeting.MeetingStatusChangeEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -29,13 +28,5 @@ public class ElasticsearchEventListener {
             case OPEN, CLOSED -> elasticsearchService.updateMeetingStatus(meeting.getId(), event.getStatus());
             case COMPLETED -> elasticsearchService.deleteMeeting(meeting);
         }
-    }
-
-    @Async("customTaskExecutor")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @EventListener
-    public void meetingChangeAttendees(MeetingAttendeesChangeEvent event) {
-
-        elasticsearchService.updateMeetingCurrentAttendees(event.getMeeting());
     }
 }
