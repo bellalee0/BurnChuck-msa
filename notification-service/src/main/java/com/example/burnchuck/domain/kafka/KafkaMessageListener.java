@@ -1,9 +1,11 @@
 package com.example.burnchuck.domain.kafka;
 
+import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_COMMENT_NOTIFICATION;
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_ATTENDEES;
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_REGISTER;
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_USER_DELETE;
 
+import com.example.burnchuck.common.event.kafka.CommentNotificationEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
 import com.example.burnchuck.common.event.kafka.UserDeleteEventMessage;
@@ -59,6 +61,19 @@ public class KafkaMessageListener {
             notificationKafkaEventHandler.handleMeetingAttendeesEvent(event);
         } catch (JsonProcessingException e) {
             log.error("[Kafka] 역직렬화 실패 - topic: {}, message: {}", TOPIC_MEETING_ATTENDEES, message, e);
+        }
+    }
+
+    @KafkaListener(
+        topics = TOPIC_COMMENT_NOTIFICATION,
+        containerFactory = "stringKafkaListenerContainerFactory"
+    )
+    public void consumeCommentNotificationMessage(String message) {
+        try {
+            CommentNotificationEventMessage event = objectMapper.readValue(message, CommentNotificationEventMessage.class);
+            notificationKafkaEventHandler.handleCommentNotificationEvent(event);
+        } catch (JsonProcessingException e) {
+            log.error("[Kafka] 역직렬화 실패 - topic: {}, message: {}", TOPIC_COMMENT_NOTIFICATION, message, e);
         }
     }
 }

@@ -169,7 +169,9 @@ public class NotificationService {
      * 후기 작성 안내 -> 모임 시작 시간 3시간 뒤, 모임 참석자들에게 발송
      */
     @Transactional
-    public void notifyCommentRequest(Meeting meeting) {
+    public void notifyCommentRequest(Long meetingId) {
+
+        Meeting meeting = meetingRepository.findActivateMeetingById(meetingId);
 
         NotificationType notificationType = NotificationType.COMMENT_REQUESTED;
 

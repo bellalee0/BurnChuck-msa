@@ -8,8 +8,8 @@ import com.example.burnchuck.batch.repository.MeetingRepository;
 import com.example.burnchuck.batch.repository.SchedulingRepository;
 import com.example.burnchuck.common.entity.Meeting;
 import com.example.burnchuck.common.enums.MeetingStatus;
+import com.example.burnchuck.common.event.kafka.CommentNotificationEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingStatusEventMessage;
-import com.example.burnchuck.common.event.notification.NotificationEventPublisher;
 import com.example.burnchuck.common.utils.TransactionUtils;
 import com.example.burnchuck.kafka.KafkaMessageProducer;
 import java.time.Instant;
@@ -30,7 +30,6 @@ public class MeetingSchedulingService {
     private final TransactionTemplate transactionTemplate;
     private final MeetingRepository meetingRepository;
     private final SchedulingRepository schedulingRepository;
-    private final NotificationEventPublisher notificationEventPublisher;
     private final KafkaMessageProducer kafkaMessageProducer;
 
     private <T> void scheduleTask(
@@ -81,7 +80,7 @@ public class MeetingSchedulingService {
             NOTIFICATION_REVIEW_REQUEST,
             e -> {
                 Meeting targetMeeting = meetingRepository.findActivateMeetingById(meetingId);
-                notificationEventPublisher.publishCommentNotificationEvent(targetMeeting);
+                TransactionUtils.afterCommit(() -> kafkaMessageProducer.sendCommentNotificationMessage(new CommentNotificationEventMessage(targetMeeting.getId())));
             },
             meeting.getMeetingDateTime().plusHours(3)
         );

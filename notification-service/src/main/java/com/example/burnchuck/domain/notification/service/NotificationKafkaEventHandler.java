@@ -2,6 +2,7 @@ package com.example.burnchuck.domain.notification.service;
 
 import com.example.burnchuck.common.enums.MeetingTaskType;
 import com.example.burnchuck.common.enums.NotificationType;
+import com.example.burnchuck.common.event.kafka.CommentNotificationEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingAttendeesEventMessage;
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
 import com.example.burnchuck.common.event.kafka.UserDeleteEventMessage;
@@ -34,5 +35,10 @@ public class NotificationKafkaEventHandler {
         NotificationType type = NotificationType.valueOf(event.getNotificationType());
 
         notificationService.notifyMeetingMember(type, event.getMeetingId(), event.getUserId());
+    }
+
+    public void handleCommentNotificationEvent(CommentNotificationEventMessage event) {
+
+        notificationService.notifyCommentRequest(event.getMeetingId());
     }
 }
