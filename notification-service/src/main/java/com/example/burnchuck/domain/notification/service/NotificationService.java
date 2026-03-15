@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -105,6 +106,7 @@ public class NotificationService {
     /**
      * 유저가 모임을 생성했을 때 -> 해당 유저를 팔로우하는 사람에게 알림 발송
      */
+    @Async("customTaskExecutor")
     @Transactional
     public void notifyNewFollowerPost(Long meetingId) {
 
@@ -168,6 +170,7 @@ public class NotificationService {
     /**
      * 후기 작성 안내 -> 모임 시작 시간 3시간 뒤, 모임 참석자들에게 발송
      */
+    @Async("customTaskExecutor")
     @Transactional
     public void notifyCommentRequest(Long meetingId) {
 
