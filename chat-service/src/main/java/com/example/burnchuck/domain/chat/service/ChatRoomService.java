@@ -91,7 +91,10 @@ public class ChatRoomService {
      * 모임 생성시 자동 호출
      */
     @Transactional
-    public void createGroupChatRoom(Meeting meeting, User host) {
+    public void createGroupChatRoom(Long meetingId, Long hostUserId) {
+
+        Meeting meeting = meetingRepository.findActivateMeetingById(meetingId);
+        User host = userRepository.findActivateUserById(hostUserId);
 
         ChatRoom chatRoom = new ChatRoom(meeting.getTitle(), RoomType.GROUP, meeting.getId());
         chatRoomRepository.save(chatRoom);

@@ -3,8 +3,6 @@ package com.example.burnchuck.batch.eventListener;
 import com.example.burnchuck.batch.repository.MeetingRepository;
 import com.example.burnchuck.batch.service.MeetingSchedulingService;
 import com.example.burnchuck.common.entity.Meeting;
-import com.example.burnchuck.common.enums.MeetingTaskType;
-import com.example.burnchuck.common.event.meeting.MeetingEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -34,8 +29,8 @@ public class MeetingScheduleEventListener {
         List<Meeting> meetingList = meetingRepository.findActivateMeetingsForSchedules();
 
         meetingList.forEach(meeting -> {
-            schedulingService.scheduleMeetingStatusComplete(meeting);
-            schedulingService.scheduleNotification(meeting);
+            schedulingService.scheduleMeetingStatusComplete(meeting.getId());
+            schedulingService.scheduleNotification(meeting.getId());
         });
 
         LocalDate today = LocalDate.now();
@@ -44,36 +39,8 @@ public class MeetingScheduleEventListener {
 
         List<Meeting> requireNotificationList = meetingRepository.findActivateMeetingsForNotification(startDate, endDate);
 
-        requireNotificationList.forEach(schedulingService::scheduleNotification);
-    }
-
-    /**
-     * MeetingCreatedEvent에 대한 Handler -> TaskSchedule 생성
-     */
-    @Async("customTaskExecutor")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @EventListener
-    public void meetingScheduleEventHandler(MeetingEvent event) {
-
-        MeetingTaskType type = event.getType();
-        Meeting meeting = event.getMeeting();
-
-        try {
-            switch (type) {
-                case CREATE -> {
-                    schedulingService.scheduleMeetingStatusComplete(meeting);
-                    schedulingService.scheduleNotification(meeting);
-                }
-                case UPDATE -> {
-                    schedulingService.scheduleCancel(meeting.getId());
-
-                    schedulingService.scheduleMeetingStatusComplete(meeting);
-                    schedulingService.scheduleNotification(meeting);
-                }
-                case DELETE -> schedulingService.scheduleCancel(meeting.getId());
-            }
-        } catch (Exception e) {
-            log.error("스케줄러 생성 실패 : {}", meeting.getId());
-        }
+        requireNotificationList.forEach(meeting ->
+            schedulingService.scheduleNotification(meeting.getId())
+        );
     }
 }

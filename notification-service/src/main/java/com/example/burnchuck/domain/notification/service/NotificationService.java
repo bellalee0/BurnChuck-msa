@@ -13,6 +13,7 @@ import com.example.burnchuck.domain.notification.dto.response.NotificationGetLis
 import com.example.burnchuck.domain.notification.dto.response.NotificationResponse;
 import com.example.burnchuck.domain.notification.dto.response.NotificationSseResponse;
 import com.example.burnchuck.domain.notification.repository.FollowRepository;
+import com.example.burnchuck.domain.notification.repository.MeetingRepository;
 import com.example.burnchuck.domain.notification.repository.NotificationRepository;
 import com.example.burnchuck.domain.notification.repository.UserMeetingRepository;
 import com.example.burnchuck.domain.notification.repository.UserRepository;
@@ -38,6 +39,7 @@ public class NotificationService {
     private final FollowRepository followRepository;
     private final UserMeetingRepository userMeetingRepository;
     private final UserRepository userRepository;
+    private final MeetingRepository meetingRepository;
 
     private final SseNotifyService sseNotifyService;
     private final RedisMessageService redisMessageService;
@@ -104,7 +106,9 @@ public class NotificationService {
      * 유저가 모임을 생성했을 때 -> 해당 유저를 팔로우하는 사람에게 알림 발송
      */
     @Transactional
-    public void notifyNewFollowerPost(Meeting meeting) {
+    public void notifyNewFollowerPost(Long meetingId) {
+
+        Meeting meeting = meetingRepository.findActivateMeetingById(meetingId);
 
         UserMeeting hostUserMeeting = userMeetingRepository.findHostUserMeetingByMeeting(meeting);
 

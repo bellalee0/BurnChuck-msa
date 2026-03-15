@@ -1,8 +1,6 @@
 package com.example.burnchuck.domain.notification.service;
 
-import com.example.burnchuck.common.enums.MeetingTaskType;
 import com.example.burnchuck.common.event.meeting.MeetingAttendeesChangeEvent;
-import com.example.burnchuck.common.event.meeting.MeetingEvent;
 import com.example.burnchuck.common.event.notification.CommentNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -16,19 +14,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class NotificationEventListener {
 
     private final NotificationService notificationService;
-    private final EmitterService emitterService;
-
-    @Async("customTaskExecutor")
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @EventListener
-    public void createNewFollowerPostNotification(MeetingEvent event) {
-
-        MeetingTaskType type = event.getType();
-
-        if (type == MeetingTaskType.CREATE) {
-            notificationService.notifyNewFollowerPost(event.getMeeting());
-        }
-    }
 
     @Async("customTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

@@ -11,6 +11,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +23,7 @@ public class ElasticsearchService {
     private final MeetingLikeRepository meetingLikeRepository;
     private final ElasticsearchOperations elasticsearchOperations;
 
+    @Async("customTaskExecutor")
     public void saveMeeting(Meeting meeting) {
 
         long likes = meetingLikeRepository.countByMeeting(meeting);
@@ -31,6 +33,7 @@ public class ElasticsearchService {
         meetingDocumentRepository.save(meetingDocument);
     }
 
+    @Async("customTaskExecutor")
     public void deleteMeeting(Meeting meeting) {
         meetingDocumentRepository.deleteById(meeting.getId());
     }

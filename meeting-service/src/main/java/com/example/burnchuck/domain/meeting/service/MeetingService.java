@@ -5,17 +5,21 @@ import static com.example.burnchuck.common.enums.ErrorCode.HOST_NOT_FOUND;
 import static com.example.burnchuck.common.enums.ErrorCode.MEETING_NOT_FOUND;
 
 import com.example.burnchuck.common.dto.AuthUser;
-import com.example.burnchuck.domain.meeting.dto.S3UrlResponse;
 import com.example.burnchuck.common.entity.Category;
 import com.example.burnchuck.common.entity.Meeting;
 import com.example.burnchuck.common.entity.User;
 import com.example.burnchuck.common.entity.UserMeeting;
 import com.example.burnchuck.common.enums.ErrorCode;
 import com.example.burnchuck.common.enums.MeetingRole;
+import com.example.burnchuck.common.enums.MeetingTaskType;
+import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
 import com.example.burnchuck.common.exception.CustomException;
 import com.example.burnchuck.common.utils.ClientInfoExtractor;
+import com.example.burnchuck.common.utils.TransactionUtils;
 import com.example.burnchuck.common.utils.UserDisplay;
 import com.example.burnchuck.domain.category.repository.CategoryRepository;
+import com.example.burnchuck.domain.kafka.KafkaMessageProducer;
+import com.example.burnchuck.domain.meeting.dto.S3UrlResponse;
 import com.example.burnchuck.domain.meeting.dto.request.MeetingCreateRequest;
 import com.example.burnchuck.domain.meeting.dto.request.MeetingUpdateRequest;
 import com.example.burnchuck.domain.meeting.dto.response.AttendeeResponse;
@@ -25,7 +29,6 @@ import com.example.burnchuck.domain.meeting.dto.response.MeetingMemberResponse;
 import com.example.burnchuck.domain.meeting.dto.response.MeetingSummaryResponse;
 import com.example.burnchuck.domain.meeting.dto.response.MeetingSummaryWithStatusResponse;
 import com.example.burnchuck.domain.meeting.dto.response.MeetingUpdateResponse;
-import com.example.burnchuck.common.event.meeting.MeetingEventPublisher;
 import com.example.burnchuck.domain.meeting.repository.MeetingRepository;
 import com.example.burnchuck.domain.meeting.repository.UserMeetingRepository;
 import com.example.burnchuck.domain.meeting.repository.UserRepository;
@@ -57,8 +60,9 @@ public class MeetingService {
     private final CategoryRepository categoryRepository;
     private final UserMeetingRepository userMeetingRepository;
 
-    private final MeetingEventPublisher meetingEventPublisher;
+    private final KafkaMessageProducer kafkaMessageProducer;
     private final MeetingCacheService meetingCacheService;
+    private final ElasticsearchService elasticsearchService;
 
     private final S3UrlGenerator s3UrlGenerator;
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
@@ -80,9 +84,9 @@ public class MeetingService {
 
         User user = userRepository.findActivateUserById(authUser.getId());
 
-        if (!s3UrlGenerator.isFileExists(request.getImgUrl().replaceAll("^https?://[^/]+/", ""))) {
-            throw new CustomException(ErrorCode.MEETING_IMG_NOT_FOUND);
-        }
+//        if (!s3UrlGenerator.isFileExists(request.getImgUrl().replaceAll("^https?://[^/]+/", ""))) {
+//            throw new CustomException(ErrorCode.MEETING_IMG_NOT_FOUND);
+//        }
 
         Category category = categoryRepository.findCategoryByCode(request.getCategoryCode());
 
@@ -111,7 +115,8 @@ public class MeetingService {
 
         userMeetingRepository.save(userMeeting);
 
-        meetingEventPublisher.publishMeetingCreatedEvent(meeting, user);
+        TransactionUtils.afterCommit(() -> elasticsearchService.saveMeeting(meeting));
+        kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.CREATE.name(), user.getId(), meeting.getMeetingDateTime()));
 
         return MeetingCreateResponse.from(meeting);
     }
@@ -187,7 +192,7 @@ public class MeetingService {
             category
         );
 
-        meetingEventPublisher.publishMeetingUpdatedEvent(meeting);
+        kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.UPDATE.name(), user.getId(), meeting.getMeetingDateTime()));
 
         return MeetingUpdateResponse.from(meeting);
     }
@@ -209,7 +214,7 @@ public class MeetingService {
 
         meeting.delete();
 
-        meetingEventPublisher.publishMeetingDeletedEvent(meeting);
+        kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.DELETE.name(), user.getId(), meeting.getMeetingDateTime()));
     }
 
     /**
@@ -223,7 +228,7 @@ public class MeetingService {
         for (Meeting meeting : meetingList) {
 
             meeting.delete();
-            meetingEventPublisher.publishMeetingDeletedEvent(meeting);
+            kafkaMessageProducer.sendMeetingRegisterMessage(new MeetingRegisterEventMessage(meeting.getId(), MeetingTaskType.DELETE.name(), userId, meeting.getMeetingDateTime()));
         }
     }
 

@@ -1,11 +1,9 @@
 package com.example.burnchuck.domain.kafka;
 
 import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_MEETING_REGISTER;
-import static com.example.burnchuck.common.constants.KafkaTopic.TOPIC_USER_DELETE;
 
 import com.example.burnchuck.common.event.kafka.MeetingRegisterEventMessage;
-import com.example.burnchuck.common.event.kafka.UserDeleteEventMessage;
-import com.example.burnchuck.domain.notification.service.NotificationKafkaEventHandler;
+import com.example.burnchuck.domain.chat.service.ChatKafkaEventHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +17,7 @@ import org.springframework.stereotype.Component;
 public class KafkaMessageListener {
 
     private final ObjectMapper objectMapper;
-    private final NotificationKafkaEventHandler notificationKafkaEventHandler;
-
-    @KafkaListener(
-        topics = TOPIC_USER_DELETE,
-        containerFactory = "stringKafkaListenerContainerFactory"
-    )
-    public void consumeUserDeleteMessage(String message) {
-        try {
-            UserDeleteEventMessage event = objectMapper.readValue(message, UserDeleteEventMessage.class);
-            notificationKafkaEventHandler.handleUserDeleteEvent(event);
-        } catch (JsonProcessingException e) {
-            log.error("[Kafka] 역직렬화 실패 - topic: {}, message: {}", TOPIC_USER_DELETE, message, e);
-        }
-    }
+    private final ChatKafkaEventHandler chatKafkaEventHandler;
 
     @KafkaListener(
         topics = TOPIC_MEETING_REGISTER,
@@ -41,7 +26,7 @@ public class KafkaMessageListener {
     public void consumeMeetingRegisterMessage(String message) {
         try {
             MeetingRegisterEventMessage event = objectMapper.readValue(message, MeetingRegisterEventMessage.class);
-            notificationKafkaEventHandler.handleMeetingRegisterEvent(event);
+            chatKafkaEventHandler.handleMeetingRegisterEvent(event);
         } catch (JsonProcessingException e) {
             log.error("[Kafka] 역직렬화 실패 - topic: {}, message: {}", TOPIC_MEETING_REGISTER, message, e);
         }

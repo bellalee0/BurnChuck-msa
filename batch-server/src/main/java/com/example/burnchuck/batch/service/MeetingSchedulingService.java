@@ -49,14 +49,16 @@ public class MeetingSchedulingService {
     /**
      * 모임 상태 변경 스케줄 생성 (모임 시작 10분 전)
      */
-    public void scheduleMeetingStatusComplete(Meeting meeting) {
+    public void scheduleMeetingStatusComplete(Long meetingId) {
+
+        Meeting meeting = meetingRepository.findActivateMeetingById(meetingId);
 
         scheduleTask(
             meeting,
-            meeting.getId(),
+            meetingId,
             MEETING_CHANGE_STATUS,
             e -> {
-                Meeting targetMeeting = meetingRepository.findActivateMeetingById(meeting.getId());
+                Meeting targetMeeting = meetingRepository.findActivateMeetingById(meetingId);
                 targetMeeting.updateStatus(MeetingStatus.COMPLETED);
                 meetingEventPublisher.publishMeetingStatusChangeEvent(meeting, MeetingStatus.COMPLETED);
             },
@@ -67,14 +69,16 @@ public class MeetingSchedulingService {
     /**
      * 알림 생성(후기 작성) 스케줄 생성 (모임 3시간 후)
      */
-    public void scheduleNotification(Meeting meeting) {
+    public void scheduleNotification(Long meetingId) {
+
+        Meeting meeting = meetingRepository.findActivateMeetingById(meetingId);
 
         scheduleTask(
             meeting,
-            meeting.getId(),
+            meetingId,
             NOTIFICATION_REVIEW_REQUEST,
             e -> {
-                Meeting targetMeeting = meetingRepository.findActivateMeetingById(meeting.getId());
+                Meeting targetMeeting = meetingRepository.findActivateMeetingById(meetingId);
                 notificationEventPublisher.publishCommentNotificationEvent(targetMeeting);
             },
             meeting.getMeetingDateTime().plusHours(3)
