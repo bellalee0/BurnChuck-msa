@@ -33,5 +33,8 @@ dependencies {
     // Swagger
     api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
 
+    // OpenFeign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0'
+
     runtimeOnly 'com.mysql:mysql-connector-j'
 }
